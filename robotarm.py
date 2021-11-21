@@ -34,7 +34,7 @@ class RobotArm:
         print("Initialised controller")
 
     
-    def move_robot(this, targetPosition: np.array, endOffset : float = None, endRotation : np.array = None ):
+    def move_robot(this, targetPosition: np.array, endOffset : float = 0, endRotation : np.array = [0,0] ):
         """Moves the robot head with a given target position, offset and rotation"""
 
         # Check if position is valid (e.g. if the Y position > 0)
@@ -42,10 +42,11 @@ class RobotArm:
             return False
 
         groundDirection = np.array([targetPosition[0],0,targetPosition[2]])
-        endRad = math.radians(endRotation)
-        offsetDirection = groundDirection * math.cos(endRad) + np.array([0,1,0]) * math.sin(endRad)
+        endRad = math.radians(endRotation[0])
+        offsetDirection = normalize(groundDirection) * math.cos(endRad) + np.array([0,-1,0]) * math.sin(endRad)
 
-        wristTargetPos = targetPosition - offsetDirection * endOffset
+        wristTargetPos = targetPosition - normalize(offsetDirection) * endOffset
+        offsetGroundDirection = np.array([wristTargetPos[0],0,wristTargetPos[2]])
 
         # create the angleList for the servoController
         angles = [0] * len(this.servoController.servos)
@@ -59,11 +60,12 @@ class RobotArm:
             # else: calculate the elbow and base angle
         targetDistance = np.linalg.norm(wristTargetPos)
         print("TargetDistance: " +  str(targetDistance))
-        if(np.linalg.norm(groundDirection) == 0):
+        if(np.linalg.norm(offsetGroundDirection) == 0):
             basePitch = math.pi/2
         else:
-            basePitch = math.atan(wristTargetPos[1] / np.linalg.norm(groundDirection))
+            basePitch = math.atan(wristTargetPos[1] / np.linalg.norm(offsetGroundDirection))
         elbowPitch = math.pi
+        
 
         if((UPPER_ARM_LENGTH + LOWER_ARM_LENGTH) > targetDistance):
             #the target is withing reach of the robot arm
@@ -74,19 +76,28 @@ class RobotArm:
             basePitch += math.acos((pow(b,2) - pow(c,2) - pow(a,2))/(-2 * a * c))
             elbowPitch = math.acos((pow(c,2) - pow(a,2) - pow(b,2))/(-2 * a * b))
 
-        print("These are the angles for position: " + str(targetPosition))
-        print("Base: Yaw: " + str(baseYaw * 180 / math.pi) + ", Pitch:" + str(basePitch* 180 / math.pi))
-        print("elbow: Pitch: " + str(elbowPitch* 180 / math.pi))
-        print("")
+        
 
         # Step 3: aim the wrist at the target
-        wristPitch = 
+            # first set the wrist horizontal
+            # then add the endrotation
+        wristPitch = basePitch + elbowPitch -math.pi
+        print("wristPitch:", math.degrees(wristPitch))
+        #if(wristPitch < 0): wristPitch = -wristPitch
+        wristPitch += math.radians(endRotation[0]) + math.pi/2
 
         # Step 4: apply all the angles to the controllers
         angles[0] = rad_to_servo(baseYaw)
         angles[1] = rad_to_servo(basePitch, True)
         angles[2] = rad_to_servo(elbowPitch)
-        angles[3] = 90
+        angles[3] = rad_to_servo(wristPitch)
+
+        print("These are the angles for position: " + str(targetPosition))
+        print("offset direction:", offsetDirection)
+        print("WristtargetPos:", wristTargetPos)
+        for angle in angles:
+            print(angle)
+        print("")
 
         this.servoController.set_smooth_servos(angles)
 
@@ -96,5 +107,9 @@ def rad_to_servo(rad, sup = False):
     else:
         return max(0,min(180,math.degrees(rad)))
 
-
+def normalize(v):
+    norm = np.linalg.norm(v)
+    if norm == 0: 
+       return v
+    return v / norm
 
