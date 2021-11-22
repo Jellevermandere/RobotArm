@@ -4,8 +4,7 @@ class Servo:
     startAngle = 0
     angle = 0
     targetAngle = 0
-    moving = False
-    progress = 0
+    smoothness = 0.3
     
     def __init__(this, pin, angle):
         this.pin = pin
@@ -15,28 +14,32 @@ class Servo:
     def set_angle(this, targetAngle):
         this.targetAngle = targetAngle
         this.startAngle = this.angle
-        this.moving = True
-        this.progress = 0
-        #print("Servo at pin:", this.pin, " is set for:" , this.targetAngle, "current angle:", this.angle)
 
     def move_servo(this, progress = 1):
         """Returns the angle the servo is on it's path to the target"""
-        this.progress = progress
 
         if(progress >= 1):
             #the servo is arrived, return the target angle
-            this.progress = 0
-            this.moving = False
             this.angle = this.targetAngle
-            return this.targetAngle
         else:
-            this.angle = lerp(this.startAngle, this.targetAngle, this.progress)
-            return this.angle
-
-        
-
-
+            this.angle = lerp(this.startAngle, this.targetAngle, q_lerp(this.progress,smoothness,smoothness))
+        return this.angle
 
 
 def lerp(start, end, value):
     return (value * end) + ((1-value) * start)
+
+def q_lerp(value : float, easeIn : float, easeOut : float):
+    """convert a linear value to an eased value accrding to the smoothness (0->1)"""
+    P0 = [0,0]
+    P1 = [1,1]
+    PIn = [easeIn,0]
+    POut = [1-easeOut,1]
+
+    A = lerp(P0,PIn, value)
+    B = lerp(PIn,POut, value)
+    C = lerp(POut,P1, value)
+    D = lerp(A,B, value)
+    E = lerp(B,C, value)
+    return lerp(D,E, value)
+

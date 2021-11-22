@@ -17,6 +17,8 @@ class ServoController:
 
 
     def log_angles(this):
+        """outputs all the current angles of the attatched servos"""
+
         print("these are the servo angles:")
         i = 0
         for servo in this.servos:
@@ -36,7 +38,7 @@ class ServoController:
         # Set the PWM frequency to 60hz.
         pca.frequency = 60
         # Set the channels active
-        kit = ServoKit(channels=16)
+        kit = ServoKit(channels=(max(servoList)+1))
 
         # create new servo objects
         servos = []
@@ -85,6 +87,20 @@ class ServoController:
             
             time.sleep(this.frameTime)
         #print("")
+
+     def set_servos(this, angles):
+         """Set the angles for all the servos as fast as possible"""
+         if(len(angles) != len(this.servos)):
+            print("ERROR: incorrect number of angles to move theservos to")
+            return
+
+        #set the target angles to all the servos
+        for i in range(len(this.servos)):
+            this.servos[i].set_angle(angles[i])
+            
+        #set all the servo pins to the end value
+        for servo in this.servos:
+                this.kit.servo[servo.pin].angle =  servo.move_servo(1)
 
 
 
