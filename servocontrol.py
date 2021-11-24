@@ -38,7 +38,7 @@ class ServoController:
         # Set the PWM frequency to 60hz.
         pca.frequency = 60
         # Set the channels active
-        kit = ServoKit(channels=(max(servoList)+1))
+        kit = ServoKit(channels=16)
 
         # create new servo objects
         servos = []
@@ -88,9 +88,9 @@ class ServoController:
             time.sleep(this.frameTime)
         #print("")
 
-     def set_servos(this, angles):
-         """Set the angles for all the servos as fast as possible"""
-         if(len(angles) != len(this.servos)):
+    def set_servos(this, angles):
+        """Set the angles for all the servos as fast as possible"""
+        if(len(angles) != len(this.servos)):
             print("ERROR: incorrect number of angles to move theservos to")
             return
 
@@ -100,7 +100,7 @@ class ServoController:
             
         #set all the servo pins to the end value
         for servo in this.servos:
-                this.kit.servo[servo.pin].angle =  servo.move_servo(1)
+            this.kit.servo[servo.pin].angle =  servo.move_servo(1)
 
 
 

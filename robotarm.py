@@ -35,7 +35,7 @@ class RobotArm:
         print("Initialised controller with parameters:")
         print("Servos Pins:", SERVO_LIST)
         print("Speed:", SPEED, "deg/s")
-        print("fps:", round(1/FRAME_Time))
+        print("fps:", round(1/FRAME_TIME))
 
     
     def move_robot(this, targetPosition: np.array, endOffset : float = 0, endRotation : np.array = [0,0], smooth = True ):
@@ -112,17 +112,17 @@ class RobotArm:
         this.servoController.set_smooth_servos([180,0,0,0])
 
         # 2: The elbow, pitch (0,180) -> starting closed -> ending fully stretched
-        time.freeze(0.5)
+        time.sleep(0.5)
         this.servoController.set_smooth_servos([180,0,180,180])
         # 1: The base, pitch (0,180) -> starting horizontal
-        time.freeze(0.5)
+        time.sleep(0.5)
         this.servoController.set_smooth_servos([180,180,180,0])
         
         # 3: The wrist, pitch (-90,90) -> starting straight -> 90deg up and down
-        time.freeze(0.5)
+        time.sleep(0.5)
         this.servoController.set_smooth_servos([0,90,180,90])
         # 4: The wrist, roll (0,360)
-        time.freeze(0.5)
+        time.sleep(0.5)
         this.servoController.set_smooth_servos([0,0,0,0])
 
 def rad_to_servo(rad, sup = False):
