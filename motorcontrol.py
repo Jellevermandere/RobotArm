@@ -9,7 +9,7 @@ from adafruit_servokit import ServoKit
 from servo import Servo
 
 
-class ServoController:
+class MotorController:
     servos = []
     kit = None
     speed = 180 #the degrees per second to move
@@ -25,7 +25,7 @@ class ServoController:
             print(i,": ", this.kit.servo[servo.pin].angle)
             i+=1
 
-    def setup_servo_controller(this, servoList : list, speed = 180, frameTime = 0.016):
+    def setup_servos(this, servoList : list, speed = 180, frameTime = 0.016):
         """Prepares everything for the servo's to work"""
 
         this.speed = speed
@@ -50,11 +50,14 @@ class ServoController:
         this.kit = kit
         this.servos = servos
 
-        this.set_smooth_servos([0] * len(servoList))
+        this.set_smooth_motors([0] * len(servoList))
 
         return kit, servos
 
-    def set_smooth_servos(this, angles):
+    def setup_steppers(this):
+        "Sets up stepper motors to control"
+
+    def set_smooth_motors(this, angles):
         """Moves the servos to the target angles in the list"""
 
         if(len(angles) != len(this.servos)):
@@ -88,7 +91,7 @@ class ServoController:
             time.sleep(this.frameTime)
         #print("")
 
-    def set_servos(this, angles):
+    def set_angles(this, angles):
         """Set the angles for all the servos as fast as possible"""
         if(len(angles) != len(this.servos)):
             print("ERROR: incorrect number of angles to move theservos to")

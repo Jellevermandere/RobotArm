@@ -1,13 +1,13 @@
-from servocontrol import ServoController
+from motorcontrol import MotorController
 import time
 
 servoList = [0,1,2,3]
 
-controller = ServoController()
-controller.setup_servo_controller(servoList, 180)
+controller = MotorController()
+controller.setup_servos(servoList, 180)
 #time.sleep(0.5)
 controller.log_angles()
-controller.set_smooth_servos([90,90,90,90])
+controller.set_smooth_motors([90,90,90,90])
 #time.sleep(0.5)
 controller.log_angles()
 #controller.set_smooth_servos([90,129,45,90])
