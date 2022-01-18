@@ -1,4 +1,5 @@
 # This is the main control script for the robot arm
+from RPi import GPIO
 import numpy as np
 import math
 import time
@@ -19,18 +20,21 @@ from motorcontrol import MotorController
 # the coordinate sytem: Z: forward, X: right Y: up
 
 #robot settings
-UPPER_ARM_LENGTH = 0.1
-LOWER_ARM_LENGTH = 0.07
+UPPER_ARM_LENGTH = 0.35
+LOWER_ARM_LENGTH = 0.25
 SPEED = 90 #degrees per second
 FRAME_TIME = 0.016 #the fps of the robot
 
 #servo settings
-SERVO_LIST = [0,4,8,12]
+SERVO_LIST = [[0,500,2500],[1, 500,2500/3*2],[2,500,2400 ],[3, 500,2200],[4,500,2400]]
 
 #stepper settings
+GPIO_PINS = (13, 19, 26) 
+STEPPER_TYPE = "A4988"
 STEPPER_DIRECTION_PIN = 20
 STEPPER_STEP_PIN = 21
 STEPPER_RESOLUTION = 200 #steps per rotation
+STEPPER_LIST = [[STEPPER_DIRECTION_PIN, STEPPER_STEP_PIN, STEPPER_TYPE, STEPPER_RESOLUTION]]
 
 class RobotArm:
 
@@ -39,7 +43,12 @@ class RobotArm:
     def __init__(this):
         """Create a new instance of a RobotArm with the motors configured"""
         this.motorController = MotorController()
-        this.motorController.setup_servos(SERVO_LIST, SPEED, FRAME_TIME)
+        servos = this.motorController.setup_servos(SERVO_LIST, SPEED, FRAME_TIME)
+        #steppers = this.motorController.setup_steppers(GPIO_PINS, STEPPER_LIST)
+        motorList = [servos[4], servos[0], servos[1], servos[2], servos[3]]
+        #motorList = [servos[0], servos[1], servos[2], servos[3]]
+        this.motorController.set_motor_order(motorList)
+        this.motorController.reset_motors()
         print("Initialised controller with parameters:")
         print("Servos Pins:", SERVO_LIST)
         print("Speed:", SPEED, "deg/s")
@@ -62,7 +71,7 @@ class RobotArm:
         groundDirection = np.array([1,0,1]) * wristTargetPos
 
         # create the angleList for the servoController
-        angles = [0] * len(this.motorController.servos)
+        angles = [0] * len(this.motorController.motors)
 
         # Step 1: aim the base (0 deg is right, rotating counter clockwise)
         baseYaw = math.atan2(targetPosition[2], targetPosition[0])
@@ -71,7 +80,7 @@ class RobotArm:
             # if further than the lenght: go straight
             # else: calculate the elbow and base angle
         targetDistance = np.linalg.norm(wristTargetPos)
-        print("TargetDistance: " +  str(targetDistance))
+        #print("TargetDistance: " +  str(targetDistance))
         if(np.linalg.norm(groundDirection) == 0):
             basePitch = math.pi/2
         else:
@@ -79,7 +88,7 @@ class RobotArm:
         elbowPitch = math.pi
         if((UPPER_ARM_LENGTH + LOWER_ARM_LENGTH) > targetDistance):
             #the target is withing reach of the robot arm
-            print("The distance is within reach")
+            #print("The distance is within reach")
             a = UPPER_ARM_LENGTH
             b = LOWER_ARM_LENGTH
             c = targetDistance
@@ -90,7 +99,7 @@ class RobotArm:
             # first set the wrist horizontal
             # then add the endrotation
         wristPitch = basePitch + elbowPitch -math.pi
-        print("wristPitch:", math.degrees(wristPitch))
+        #print("wristPitch:", math.degrees(wristPitch))
         #if(wristPitch < 0): wristPitch = -wristPitch
         wristPitch += math.radians(endRotation[0]) + math.pi/2
 
@@ -100,12 +109,12 @@ class RobotArm:
         angles[2] = rad_to_servo(elbowPitch)
         angles[3] = rad_to_servo(wristPitch)
 
-        print("These are the angles for position: " + str(targetPosition))
-        print("offset direction:", offsetDirection)
-        print("WristtargetPos:", wristTargetPos)
-        for angle in angles:
-            print(angle)
-        print("")
+        #print("These are the angles for position: " + str(targetPosition))
+        #print("offset direction:", offsetDirection)
+        #print("WristtargetPos:", wristTargetPos)
+        #for angle in angles:
+        #    print(angle)
+        #print("")
 
         if(smooth):
             this.motorController.set_smooth_motors(angles)
@@ -132,6 +141,28 @@ class RobotArm:
         # 4: The wrist, roll (0,360)
         time.sleep(0.5)
         this.motorController.set_smooth_motors([0,0,0,0])
+
+    def test_Motors(this):
+        """Moves the robot arm to check if all axis are working as intended"""
+
+        # 0: The base, yaw (0,360)
+        this.motorController.set_smooth_motors([0,0,0,0,0])
+        this.motorController.set_smooth_motors([180,180,180,180,180])
+
+        # 2: The elbow, pitch (0,180) -> starting closed -> ending fully stretched
+        time.sleep(0.5)
+        this.motorController.set_smooth_motors([90,90,90,90,90])
+        # 1: The base, pitch (0,180) -> starting horizontal
+        time.sleep(0.5)
+        this.motorController.set_smooth_motors([45,45,45,45,45])
+        
+        # 3: The wrist, pitch (-90,90) -> starting straight -> 90deg up and down
+        time.sleep(0.5)
+        this.motorController.set_smooth_motors([135,135,135,135,135])
+        # 4: The wrist, roll (0,360)
+        time.sleep(0.5)
+        this.motorController.set_smooth_motors([0,0,0,0,0])
+    
 
 def rad_to_servo(rad, sup = False):
     if(sup):

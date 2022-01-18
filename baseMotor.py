@@ -7,20 +7,21 @@ class BaseMotor:
     smoothness = 1.5 #min value of 1 end go to inf -> straight to step function
     motor = None
 
-    def __init__(this, angle):
-        this.startAngle = angle
-        this.angle = angle
+    def __init__(self, angle, motor):
+        self.startAngle = angle
+        self.angle = angle
+        self.motor = motor
 
-    def set_angle(this, targetAngle):
-        this.targetAngle = targetAngle
-        this.startAngle = this.angle
+    def set_angle(self, targetAngle):
+        self.targetAngle = targetAngle
+        self.startAngle = self.angle
 
-    def move(this, progress = 1):
+    def move(self, progress = 1):
         """Set the motor to a certain angle"""
 
         if(progress >= 1):
             #the servo is arrived, return the target angle
-            this.angle = this.targetAngle
+            self.angle = self.targetAngle
         else:
-            this.angle = lerp(this.startAngle, this.targetAngle, q_lerp(progress,this.smoothness))
+            self.angle = lerp(self.startAngle, self.targetAngle, q_lerp(progress,self.smoothness))
         
