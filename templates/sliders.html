@@ -1,0 +1,56 @@
+<!doctype html>
+<title>Control Servos</title>
+<h1>Control the servo's with sliders</h1>
+<form onsubmit="return fetchpost()" enctype=multipart/form-data>
+    <h3> BaseYaw: </h3>
+    <input type="range" min="0" max="180" value="0" class="slider" name="BaseYaw" id="BaseYaw">
+    <br />
+    <h3> BasePitch: </h3>
+    <input type="range" min="0" max="180" value="0" class="slider" name="BasePitch" id="BasePitch">
+    <br />
+    <h3> ElbowPitch: </h3>
+    <input type="range" min="0" max="180" value="0" class="slider" name="ElbowPitch" id="ElbowPitch">
+    <br />
+    <h3> WristPitch: </h3>
+    <input type="range" min="0" max="180" value="0" class="slider" name="WristPitch" id="WristPitch">
+    <br />
+    <h3> WristRoll: </h3>
+    <input type="range" min="0" max="180" value="0" class="slider" name="WristRoll" id="WristRoll">
+    <br />
+    <h3> Smooth: </h3>
+    <input type="checkbox" checked = "true" name = "smooth" id = "smooth">
+    <br />
+    <input type=submit value=Upload>
+</form>
+
+<script>
+    function fetchpost() {
+        // (A) GET FORM DATA
+        let data = new URLSearchParams();
+        data.append("BaseYaw", document.getElementById("BaseYaw").value);
+        data.append("BasePitch", document.getElementById("BasePitch").value);
+        data.append("ElbowPitch", document.getElementById("ElbowPitch").value);
+        data.append("WristPitch", document.getElementById("WristPitch").value);
+        data.append("WristRoll", document.getElementById("WristRoll").value);
+        data.append("smooth", document.getElementById("smooth").checked);
+        
+
+        // (B) FETCH
+        fetch("/sliders", {
+            method: 'post',
+            body: data
+        })
+            .then(function (response) {
+                return response.text();
+            })
+            .then(function (text) {
+                console.log(text);
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+
+        // (C) PREVENT HTML FORM SUBMIT
+        return false;
+    }
+</script>

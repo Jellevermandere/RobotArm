@@ -17,7 +17,7 @@ class MotorController:
     motors = []
     servoKit = None
     speed = 90 #the degrees per second to move
-    frameTime = 0.016
+    frameTime = 0.03
 
 
     def log_angles(this):
@@ -48,6 +48,7 @@ class MotorController:
         servos = []
         for pin in servoList:
             kit.servo[pin[0]].set_pulse_width_range(pin[1], pin[2])
+            kit.servo[pin[0]].angle = 0
             newServo = Servo(max(0, min(180,kit.servo[pin[0]].angle)), kit.servo[pin[0]])
             servos.append(newServo)
 
@@ -89,13 +90,14 @@ class MotorController:
         largestAngleDelta = 0
         for i in range(len(this.motors)):
             largestAngleDelta = max(largestAngleDelta, abs(max(0,this.motors[i].angle) - angles[i]))
-
+        
         duration = (largestAngleDelta / this.speed)
         steps = duration / this.frameTime
         if(steps == 0): 
             steps = 1
+        print("Largest angle:", largestAngleDelta, "\n duration:", duration, "\n steps:", steps)
         progress = 0
-        print("starting movement")
+        
         startTime = time.time()
         
         
@@ -104,12 +106,14 @@ class MotorController:
             #print("newLoop")
             progress += 1.0/steps
             progress = min(1,progress)
+            #print(progress)
             for i,motor in enumerate(this.motors):
                 motor.move(progress)
-                if(i == 1): print("angle:", motor.motor.angle)
+                #if(i == 1): print("angle:", motor.motor.angle)
                 #print(servo.pin," servo progress:" , progress, "Angle:", this.kit.servo[servo.pin].angle)
-            #print("frameTime:", this.frameTime - (time.time()-currentTime))
+            #print("frameTime:",(time.time()-currentTime))
             time.sleep(max(0, this.frameTime - (time.time()-currentTime)))
+            #time.sleep(max(0, this.frameTime))
         #print("")
 
     def set_angles(this, angles):

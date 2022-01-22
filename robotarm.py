@@ -23,10 +23,10 @@ from motorcontrol import MotorController
 UPPER_ARM_LENGTH = 0.35
 LOWER_ARM_LENGTH = 0.25
 SPEED = 90 #degrees per second
-FRAME_TIME = 0.016 #the fps of the robot
+FRAME_TIME = 0.033 #the fps of the robot
 
 #servo settings
-SERVO_LIST = [[0,500,2500],[1, 500,2500/3*2],[2,500,2400 ],[3, 500,2200],[4,500,2400]]
+SERVO_LIST = [[0,600,2500],[1, 500,2500/3*2],[2,500,2400 ],[3, 500,2200],[4,500,2400]]
 
 #stepper settings
 GPIO_PINS = (13, 19, 26) 
@@ -39,6 +39,7 @@ STEPPER_LIST = [[STEPPER_DIRECTION_PIN, STEPPER_STEP_PIN, STEPPER_TYPE, STEPPER_
 class RobotArm:
 
     motorController: MotorController = None
+    moving = False
 
     def __init__(this):
         """Create a new instance of a RobotArm with the motors configured"""
@@ -48,7 +49,7 @@ class RobotArm:
         motorList = [servos[4], servos[0], servos[1], servos[2], servos[3]]
         #motorList = [servos[0], servos[1], servos[2], servos[3]]
         this.motorController.set_motor_order(motorList)
-        this.motorController.reset_motors()
+        #this.motorController.reset_motors()
         print("Initialised controller with parameters:")
         print("Servos Pins:", SERVO_LIST)
         print("Speed:", SPEED, "deg/s")
@@ -58,6 +59,9 @@ class RobotArm:
     def move_robot(this, targetPosition: np.array, endOffset : float = 0, endRotation : np.array = [0,0], smooth = True ):
         """Moves the robot head with a given target position, offset and rotation"""
 
+        if(this.moving): return False
+        
+        this.moving = True
         # Check if position is valid (e.g. if the Y position > 0)
         if(targetPosition[1] < 0):
             return False
@@ -120,6 +124,8 @@ class RobotArm:
             this.motorController.set_smooth_motors(angles)
         else:
             this.motorController.set_angles(angles)
+
+        this.moving = False
 
     def test_movement(this):
         """Moves the robot arm to check if all axis are working as intended"""
