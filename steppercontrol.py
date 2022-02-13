@@ -15,15 +15,15 @@ baseStepper = RpiMotorLib.A4988Nema(direction, step, GPIO_pins, "A4988")
 
 stepper = Stepper(0, baseStepper, 200)
 
-stepper.set_angle(180)
+stepper.set_angle(45)
 stepper.move()
-
-stepper.set_angle(270)
+time.sleep(1)
+stepper.set_angle(90)
 stepper.move()
-
+time.sleep(1)
 stepper.set_angle(0)
 stepper.move()
-
+time.sleep(1)
 
 
 

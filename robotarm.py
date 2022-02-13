@@ -23,10 +23,11 @@ from motorcontrol import MotorController
 UPPER_ARM_LENGTH = 0.35
 LOWER_ARM_LENGTH = 0.25
 SPEED = 90 #degrees per second
-FRAME_TIME = 0.033 #the fps of the robot
+FRAME_TIME = 0.016 #the fps of the robot
 
 #servo settings
-SERVO_LIST = [[0,600,2500],[1, 500,2500/3*2],[2,500,2400 ],[3, 500,2200],[4,500,2400]]
+SERVO_LIST = [[11,500,2400],[10, 400,1666],[9,500,2400 ],[8, 500,2200],[7,500,2400]]
+#SERVO_LIST = [[0,500,2400],[4, 500,2400],[8,500,2400 ],[12, 500,2400],[15,500,2400]]
 
 #stepper settings
 GPIO_PINS = (13, 19, 26) 
@@ -45,9 +46,10 @@ class RobotArm:
         """Create a new instance of a RobotArm with the motors configured"""
         this.motorController = MotorController()
         servos = this.motorController.setup_servos(SERVO_LIST, SPEED, FRAME_TIME)
-        #steppers = this.motorController.setup_steppers(GPIO_PINS, STEPPER_LIST)
-        motorList = [servos[4], servos[0], servos[1], servos[2], servos[3]]
-        #motorList = [servos[0], servos[1], servos[2], servos[3]]
+        steppers = this.motorController.setup_steppers(GPIO_PINS, STEPPER_LIST)
+        #motorList = [servos[4], servos[0], servos[1], servos[2], servos[3]]
+        #motorList = [servos[0], servos[1], servos[2], servos[3], servos[4]]
+        motorList = [steppers[0], servos[0], servos[1], servos[2], servos[3]]
         this.motorController.set_motor_order(motorList)
         #this.motorController.reset_motors()
         print("Initialised controller with parameters:")
