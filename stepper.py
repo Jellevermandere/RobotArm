@@ -20,8 +20,8 @@ class Stepper(BaseMotor):
 
         super().set_angle(targetAngle)
 
-        if(self.angle >= 360): self.angle -= 360
-        if(self.angle < 0): self.angle += 360
+        self.angle %= 360
+        self.targetAngle %= 360
         if(targetAngle - self.angle > 180):
             #it's shorter to go in the negative direction
             self.targetAngle -= 360

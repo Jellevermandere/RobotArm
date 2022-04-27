@@ -32,8 +32,8 @@ SERVO_LIST = [[11,500,2400],[10, 400,1666],[9,500,2400 ],[8, 500,2200],[7,500,24
 #stepper settings
 GPIO_PINS = (13, 19, 26) 
 STEPPER_TYPE = "A4988"
-STEPPER_DIRECTION_PIN = 20
-STEPPER_STEP_PIN = 21
+STEPPER_DIRECTION_PIN = 21
+STEPPER_STEP_PIN = 20
 STEPPER_RESOLUTION = 200 #steps per rotation
 STEPPER_LIST = [[STEPPER_DIRECTION_PIN, STEPPER_STEP_PIN, STEPPER_TYPE, STEPPER_RESOLUTION]]
 
@@ -49,7 +49,7 @@ class RobotArm:
         steppers = this.motorController.setup_steppers(GPIO_PINS, STEPPER_LIST)
         #motorList = [servos[4], servos[0], servos[1], servos[2], servos[3]]
         #motorList = [servos[0], servos[1], servos[2], servos[3], servos[4]]
-        motorList = [steppers[0], servos[0], servos[1], servos[2], servos[3]]
+        motorList = [steppers[0], servos[0], servos[1], servos[3], servos[2]]
         this.motorController.set_motor_order(motorList)
         #this.motorController.reset_motors()
         print("Initialised controller with parameters:")

@@ -1,12 +1,15 @@
 from xmlrpc.client import Boolean
 from flask import Flask, request, redirect, render_template
 from flask_socketio import SocketIO
+from flask_cors import CORS
 import numpy as np
 
 from robotarm import RobotArm
 
 app = Flask(__name__)
 #socketio = SocketIO(app)
+CORS(app)
+
 
 robot = RobotArm()
 

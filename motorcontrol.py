@@ -1,4 +1,5 @@
 import time
+from threading import Thread
 
 import busio
 #import the PCA module
@@ -127,8 +128,8 @@ class MotorController:
             this.motors[i].set_angle(angles[i])
             
         #set all the servo pins to the end value
-        for servo in this.motors:
-            servo.move(1)
+        for motor in this.motors:
+            motor.move(1)
 
 
 
