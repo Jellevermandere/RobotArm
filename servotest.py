@@ -1,4 +1,4 @@
-from motorcontrol import MotorController
+from robotarmcontrol.motorcontrol import MotorController
 import time
 
 servoList = [0,1,2,3]

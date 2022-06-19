@@ -1,4 +1,4 @@
-from helper import lerp, q_lerp, clamp
+from robotarmcontrol.helper import lerp, q_lerp, clamp
 
 class BaseMotor:
     startAngle = 0
@@ -8,16 +8,18 @@ class BaseMotor:
     motor = None
 
     def __init__(self, angle, motor):
+        """init with a start angle and motor (stepper or servo"""
         self.startAngle = angle
         self.angle = angle
         self.motor = motor
 
     def set_angle(self, targetAngle):
+        """Sets a new target angle"""
         self.targetAngle = targetAngle
         self.startAngle = self.angle
 
     def move(self, progress = 1):
-        """Set the motor to a certain angle"""
+        """Lerp the motor to a certain angle"""
 
         if(progress >= 1):
             #the servo is arrived, return the target angle

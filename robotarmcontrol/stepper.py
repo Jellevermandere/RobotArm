@@ -1,7 +1,9 @@
 
-from baseMotor import BaseMotor
-from helper import lerp, q_lerp, clamp
 import math
+
+from robotarmcontrol.baseMotor import BaseMotor
+from robotarmcontrol.helper import clamp, lerp, q_lerp
+
 
 class Stepper(BaseMotor):
     "Base class to control and set up a stepper"

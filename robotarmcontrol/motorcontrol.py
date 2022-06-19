@@ -2,14 +2,13 @@ import time
 from threading import Thread
 
 import busio
-#import the PCA module
 from adafruit_pca9685 import PCA9685
 from adafruit_servokit import ServoKit
 from board import SCL, SDA
 from RpiMotorLib import RpiMotorLib
 
-from servo import Servo
-from stepper import Stepper
+from robotarmcontrol.servo import Servo
+from robotarmcontrol.stepper import Stepper
 
 
 class MotorController:
@@ -49,7 +48,7 @@ class MotorController:
         servos = []
         for pin in servoList:
             kit.servo[pin[0]].set_pulse_width_range(pin[1], pin[2])
-            kit.servo[pin[0]].angle = 0
+            #kit.servo[pin[0]].angle = 0
             newServo = Servo(max(0, min(180,kit.servo[pin[0]].angle)), kit.servo[pin[0]])
             servos.append(newServo)
 

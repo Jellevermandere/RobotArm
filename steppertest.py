@@ -1,7 +1,8 @@
-from RpiMotorLib import RpiMotorLib
 import time
 
-from stepper import Stepper
+from RpiMotorLib import RpiMotorLib
+
+from robotarmcontrol.stepper import Stepper
 
 #define GPIO pins
 GPIO_pins = (13, 19, 26)    # Microstep Resolution MS1-MS3 -> GPIO Pin
@@ -23,9 +24,3 @@ time.sleep(1)
 stepper.set_angle(0)
 stepper.move()
 time.sleep(1)
-
-
-
-class StepperController():
-    "control all the connected stepper motors with simple controls"
-    

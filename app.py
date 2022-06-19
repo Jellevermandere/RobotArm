@@ -4,7 +4,7 @@ from flask_socketio import SocketIO
 from flask_cors import CORS
 import numpy as np
 
-from robotarm import RobotArm
+from robotarmcontrol.robotarm import RobotArm
 
 app = Flask(__name__)
 #socketio = SocketIO(app)
@@ -26,9 +26,23 @@ def test():
 def websocket():
     return render_template('websocket.html')
 
-@app.route("/control",methods = ['POST'])
+@app.route("/control",methods = ['GET','POST'])
 def control():
-    pass
+    if request.method == 'POST':
+        print("received POST request",request.form.get("smooth"))
+        x = float(request.form.get("x"))
+        y = float(request.form.get("y"))
+        z = float(request.form.get("z"))
+        wristPitch = float(request.form.get("WristPitch"))
+        wristRoll = float(request.form.get("WristRoll"))
+        smooth = request.form.get("smooth")
+    
+        #if(smooth.lower() == "true"): robot.motorController.set_smooth_motors([baseYaw,basePitch,elbowPitch,wristPitch, wristRoll])
+        #else: robot.motorController.set_angles([baseYaw,basePitch,elbowPitch,wristPitch, wristRoll])
+        return "POST Succes"
+
+    else:
+        return render_template('sliders.html')
 
 
 
@@ -57,3 +71,5 @@ if __name__ == '__main__':
     #/home/pi/Documents/RobotArm/app.py
 
     #sudo -E app.py
+
+    # sudo -E python3 app.py
